@@ -1,3 +1,4 @@
+using Akavache;
 using EDAnalyzer.Interfaces;
 using EDAnalyzer.Services;
 using EDAnalyzer.Views;
@@ -16,6 +17,8 @@ namespace EDAnalyzer.ViewModels
 			RegisterParts(dependencyResolver);
 
 			LogHost.Default.Level = LogLevel.Debug;
+			BlobCache.ApplicationName = "EDAnalyzer";
+			BlobCache.EnsureInitialized();
 
 			Router.Navigate.Execute(new MainViewModel(this));
 		}

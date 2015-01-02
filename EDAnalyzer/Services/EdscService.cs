@@ -1,6 +1,12 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net.Http;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Akavache;
 using EDAnalyzer.Models.EDSC;
 using EDAnalyzer.Models.EDSC.Query;
 using EDAnalyzer.Models.EDSC.Response;
@@ -20,25 +26,56 @@ namespace EDAnalyzer.Services
 
 		public async Task<EdscQueryResponse> QueryForSystemNameAsync(string systemName)
 		{
+			EdscQueryResponse response = null;
+			try
+			{
+				response = await BlobCache.LocalMachine.GetObject<EdscQueryResponse>(systemName);
+			}
+			catch (KeyNotFoundException)
+			{
+			}
+
+			if (response != null)
+				return response;
+
 			var queryContent = CreateQueryForSystemNamePayload(systemName);
 			var result = await _client.PostAsync(BaseUrl + "GetSystems", queryContent);
 			var responseContent = await result.Content.ReadAsStringAsync();
-			var response = JsonConvert.DeserializeObject<EdscQueryResponse>(responseContent);
+			response = JsonConvert.DeserializeObject<EdscQueryResponse>(responseContent);
+
+			await BlobCache.LocalMachine.InsertObject(systemName, response, TimeSpan.FromDays(1));
 
 			return response;
 		}
 
 		public async Task<EdscSystemsInRangeResponse> QueryForSystemsWithinRangeAsync(float lightYearsRadius, float[] origin)
 		{
+			var cacheKey = string.Format("{0}_{1}", lightYearsRadius, origin.Aggregate((i, j) => i + j)).GetHashCode().ToString(CultureInfo.InvariantCulture);
+
+			EdscSystemsInRangeResponse response = null;
+			try
+			{
+				response = await BlobCache.LocalMachine.GetObject<EdscSystemsInRangeResponse>(cacheKey);
+			}
+			catch (KeyNotFoundException)
+			{
+			}
+
+			if (response != null)
+				return response;
+
 			var queryContent = CreateQueryForSystemsWithinRange(null, lightYearsRadius, origin);
 			var result = await _client.PostAsync(BaseUrl + "GetDistances", queryContent);
 			var responseContent = await result.Content.ReadAsStringAsync();
-			var response = JsonConvert.DeserializeObject<EdscSystemsInRangeResponse>(responseContent);
+			response = JsonConvert.DeserializeObject<EdscSystemsInRangeResponse>(responseContent);
+
+			await BlobCache.LocalMachine.InsertObject(cacheKey, response, TimeSpan.FromDays(1));
 
 			return response;
 		}
 
-		private static StringContent CreateQueryForSystemsWithinRange(string systemName, float lightYearsRadius, float[] origin)
+		private static StringContent CreateQueryForSystemsWithinRange(string systemName, float lightYearsRadius,
+			float[] origin)
 		{
 			var query = CreateQueryObject(systemName);
 			query.Query.QueryFilter.CoordSphere = new CoordSphere

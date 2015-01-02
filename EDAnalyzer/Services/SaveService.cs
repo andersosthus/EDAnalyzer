@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using EDAnalyzer.Interfaces;
 using EDAnalyzer.Models;
@@ -13,10 +15,27 @@ namespace EDAnalyzer.Services
 		{
 			await Task.Factory.StartNew(() =>
 			{
-				using (var file = File.Create(Constants.DataFile))
+				var retry = true;
+				var tries = 0;
+
+				do
 				{
-					Serializer.Serialize(file, data);
-				}
+					try
+					{
+						using (var file = File.Create(Constants.DataFile))
+						{
+							Serializer.Serialize(file, data);
+						}
+						retry = false;
+					}
+					catch (IOException)
+					{
+						tries++;
+						if (tries >= 3) retry = false;
+						Thread.Sleep(TimeSpan.FromMilliseconds(200));
+					}
+				} while (retry);
+
 			});
 		}
 	}

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Akavache;
 
 namespace EDAnalyzer
 {
@@ -7,5 +8,11 @@ namespace EDAnalyzer
 	/// </summary>
 	public partial class App : Application
 	{
+		private void App_OnExit(object sender, ExitEventArgs e)
+		{
+			BlobCache.Shutdown().Wait();
+			//var mainListVm = Locator.CurrentMutable.GetService<IMainListViewModel>();
+			//mainListVm.SaveAsync().Execute(null);
+		}
 	}
 }

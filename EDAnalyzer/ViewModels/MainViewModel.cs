@@ -88,7 +88,7 @@ namespace EDAnalyzer.ViewModels
 					Debug.WriteLine(string.Format("Found {0}", system.Name));
 				}
 
-				var systemsInRange = await edsc.QueryForSystemsWithinRangeAsync(100.00f, system.Coordinates);
+				var systemsInRange = await edsc.QueryForSystemsWithinRangeAsync(15.00f, system.Coordinates);
 
 				var systemNames = systemsInRange.Metadata.Distances.Select(x => x.SystemName.Trim().ToLower()).ToList();
 				systemNames.Add(_.ToString().ToLower());
