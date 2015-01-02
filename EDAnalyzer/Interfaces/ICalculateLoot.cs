@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EDAnalyzer.Models;
-using EDAnalyzer.Services;
 
 namespace EDAnalyzer.Interfaces
 {
 	public interface ICalculateLoot
 	{
-		List<Trade> CalculateProfitInOneSystem(IList<ItemLine> itemsInSystem);
-		void CalculateProfitAcrossSystems(IList<ItemLine> items);
+		Task<List<Trade>> CalculateProfitInOneSystem(IList<ItemLine> itemsInSystem);
+		Task<List<Trade>> CalculateProfitAcrossSystems(IList<ItemLine> items);
+		Task<List<Trade>> CalculateProfitAcrossSeveralSystemsAsync(IList<ItemLine> items, IList<string> systemNames);
 	}
 }

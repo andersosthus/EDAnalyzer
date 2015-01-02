@@ -69,6 +69,9 @@
                                     <MenuItem Header="Find optimal inter-system cargo" 
                                               Command="{Binding ViewModel.InterSystemCommand, Source={x:Reference TestControl}}"
                                               CommandParameter="{Binding SystemName}"/>
+                                    <MenuItem Header="Find optimal cargo within 15 LY" 
+                                              Command="{Binding ViewModel.System15LyCommand, Source={x:Reference TestControl}}"
+                                              CommandParameter="{Binding SystemName}"/>
                                     <MenuItem Header="Find all optimal inter-system cargo" 
                                               Command="{Binding ViewModel.AllInterSystemsCommand, Source={x:Reference TestControl}}"
                                               CommandParameter=""/>
@@ -101,42 +104,46 @@
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="25"></RowDefinition>
-                            <RowDefinition Height="25"></RowDefinition>
-                            <RowDefinition Height="25"></RowDefinition>
-                            <RowDefinition Height="25"></RowDefinition>
-                            <RowDefinition Height="25"></RowDefinition>
-                            <RowDefinition Height="25"></RowDefinition>
-                            <RowDefinition Height="25"></RowDefinition>
-                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
+                            <RowDefinition Height="27"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <!--<Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Content="From System"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Content="To System"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Content="From Station"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Content="To Station"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0" Content="Commodity"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="5" Grid.Column="0" Content="Buy For"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="6" Grid.Column="0" Content="Sell For"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="7" Grid.Column="0" Content="Profit"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Content="Balls"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Content="Balls"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Content="Balls"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Content="Balls"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1" Content="Balls"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1" Content="Balls"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="6" Grid.Column="1" Content="Balls"></Label>
-                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="7" Grid.Column="1" Content="Balls"></Label>-->
+
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Foreground="DimGray" Content="From System"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Foreground="DimGray" Content="To System"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Foreground="DimGray" Content="From Station"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Foreground="DimGray" Content="To Station"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0" Foreground="DimGray" Content="Commodity"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="5" Grid.Column="0" Foreground="DimGray" Content="Buy For"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="6" Grid.Column="0" Foreground="DimGray" Content="Sell For"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="7" Grid.Column="0" Foreground="DimGray" Content="Demand"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="8" Grid.Column="0" Foreground="DimGray" Content="Profit"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Content="{Binding SelectedTrade.FromSystem}"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Content="{Binding SelectedTrade.ToSystem}"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Content="{Binding SelectedTrade.BuyStation}"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Content="{Binding SelectedTrade.SellStation}"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1" Content="{Binding SelectedTrade.Commodity}"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1" Content="{Binding SelectedTrade.BuyPrice}"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="6" Grid.Column="1" Content="{Binding SelectedTrade.SellPrice}"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="7" Grid.Column="1" Content="{Binding SelectedTrade.Demand}"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="8" Grid.Column="1" Content="{Binding SelectedTrade.Profit}"></Label>
                     </Grid>
                 </Border>
-                <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Top Trades"></Label>
+                <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Top Trades:"></Label>
                 <ListBox 
                     x:Name="TradeBox"
                     HorizontalContentAlignment="Stretch"
                     ItemsSource="{Binding Trades}"
-                    Margin="10,10,10,10"
+                    Margin="10,0,10,10"
                     Height="300"
                     SelectionMode="Single"
-                    SelectionChanged="TradeBox_OnSelectionChanged">
+                    SelectedItem="{Binding SelectedTrade}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,2">

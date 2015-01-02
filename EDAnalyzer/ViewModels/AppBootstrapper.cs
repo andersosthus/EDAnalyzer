@@ -30,6 +30,7 @@ namespace EDAnalyzer.ViewModels
 			dependencyResolver.Register(() => new MainListViewModel(), typeof (IMainListViewModel));
 			dependencyResolver.Register(() => new SaveService(), typeof (ISaveService));
 			dependencyResolver.Register(() => new CalculateLootService(), typeof (ICalculateLoot));
+			dependencyResolver.Register(() => new EdscService(), typeof (IQueryEdsc));
 		}
 	}
 }

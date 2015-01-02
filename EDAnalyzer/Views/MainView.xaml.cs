@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using EDAnalyzer.Interfaces;
-using EDAnalyzer.Models;
 using ReactiveUI;
 
 namespace EDAnalyzer.Views
@@ -18,7 +17,6 @@ namespace EDAnalyzer.Views
 		private GridViewColumnHeader _prevHeaderSorted;
 		private string _sortHeader;
 		private ListSortDirection _sortOrder = ListSortDirection.Ascending;
-		private Trade _selectedTrade;
 
 		public MainView()
 		{
@@ -109,12 +107,6 @@ namespace EDAnalyzer.Views
 			return _sortOrder == ListSortDirection.Ascending
 				? ListSortDirection.Descending
 				: ListSortDirection.Ascending;
-		}
-
-		private void TradeBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (TradeBox.SelectedItem != null)
-				_selectedTrade = TradeBox.SelectedItem as Trade;
 		}
 	}
 }

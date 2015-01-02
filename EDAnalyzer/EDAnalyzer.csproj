@@ -52,9 +52,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
-    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
@@ -74,6 +71,12 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -114,10 +117,26 @@
     <Compile Include="Converter\UtcToLocalConverter.cs" />
     <Compile Include="Interfaces\IEddnService.cs" />
     <Compile Include="Interfaces\IMainViewModel.cs" />
+    <Compile Include="Models\EDSC\EDSCConstants.cs" />
+    <Compile Include="Models\EDSC\Query\CoordSphere.cs" />
+    <Compile Include="Models\EDSC\Response\Distance.cs" />
+    <Compile Include="Models\EDSC\Response\EdscQueryResponse.cs" />
+    <Compile Include="Models\EDSC\Response\EdscSystemsInRangeResponse.cs" />
+    <Compile Include="Models\EDSC\Response\InputStatus.cs" />
+    <Compile Include="Models\EDSC\Query\QueryForSystems.cs" />
+    <Compile Include="Models\EDSC\Response\QueryInput.cs" />
+    <Compile Include="Models\EDSC\Query\QueryParams.cs" />
+    <Compile Include="Models\EDSC\Response\QueryResponseMetadata.cs" />
+    <Compile Include="Models\EDSC\Response\ResponseStatus.cs" />
+    <Compile Include="Models\EDSC\Response\FoundSystem.cs" />
+    <Compile Include="Models\EDSC\Query\QueryFilter.cs" />
+    <Compile Include="Models\EDSC\Response\SystemReference.cs" />
+    <Compile Include="Models\EDSC\Response\SystemsInRangeResponseMetadata.cs" />
     <Compile Include="Services\CalculateLootService.cs" />
     <Compile Include="Services\EddnService.cs" />
     <Compile Include="Interfaces\ISaveService.cs" />
     <Compile Include="Interfaces\ICalculateLoot.cs" />
+    <Compile Include="Services\EdscService.cs" />
     <Compile Include="Services\SaveService.cs" />
     <Compile Include="Models\Trade.cs" />
     <Compile Include="ViewModels\AppBootstrapper.cs" />
@@ -183,6 +202,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Themes\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -190,6 +212,11 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

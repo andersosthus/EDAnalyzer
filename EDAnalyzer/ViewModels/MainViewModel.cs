@@ -1,11 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using EDAnalyzer.Interfaces;
 using EDAnalyzer.Models;
+using EDAnalyzer.Models.EDSC.Response;
 using EDAnalyzer.Services;
+using MoreLinq;
 using ReactiveUI;
 using Splat;
 
@@ -18,13 +21,14 @@ namespace EDAnalyzer.ViewModels
 		private readonly ObservableAsPropertyHelper<int> _showingItemsCount;
 		private readonly ObservableAsPropertyHelper<string> _stationCount;
 		private readonly ObservableAsPropertyHelper<string> _systemCount;
+		private readonly ReactiveList<Trade> _trades = new ReactiveList<Trade>();
 		private string _filterString = "";
 		private IReactiveDerivedList<ItemLine> _items;
 		private IMainListViewModel _listViewModel;
 		private ListSortDirection _orderDirection = ListSortDirection.Ascending;
 		private string _orderField = "";
 		private ItemLine _selectedItem;
-		private readonly ReactiveList<Trade> _trades = new ReactiveList<Trade>(); 
+		private Trade _selectedTrade;
 
 		public MainViewModel(IScreen screen)
 		{
@@ -34,24 +38,65 @@ namespace EDAnalyzer.ViewModels
 			FilterCommand = ReactiveCommand.Create();
 			FilterCommand.Subscribe(_ => { FilterString = _ as string; });
 
-			InterSystemCommand = ReactiveCommand.Create();
-			InterSystemCommand.Subscribe(_ =>
+			InterSystemCommand = ReactiveCommand.CreateAsyncTask(async _ =>
 			{
 				var lootService = Locator.CurrentMutable.GetService<ICalculateLoot>();
 				_trades.Clear();
 
 				var itemsInSystem =
 					ListViewModel.AllItems.Where(x => x.SystemName.ToLower().Equals(_.ToString().ToLower())).ToList();
-				var trades = lootService.CalculateProfitInOneSystem(itemsInSystem);
+				var trades = await lootService.CalculateProfitInOneSystem(itemsInSystem);
+
 				trades.ForEach(trade => _trades.Add(trade));
 			});
 
-			AllInterSystemsCommand = ReactiveCommand.Create();
-			AllInterSystemsCommand.Subscribe(_ =>
+			AllInterSystemsCommand = ReactiveCommand.CreateAsyncTask(async _ =>
 			{
 				var lootService = Locator.CurrentMutable.GetService<ICalculateLoot>();
-				var items = ListViewModel.AllItems.ToList();
-				lootService.CalculateProfitAcrossSystems(items);
+				_trades.Clear();
+
+				var items = ListViewModel.AllItems.ToList().ToList();
+				var trades = await lootService.CalculateProfitAcrossSystems(items);
+
+				trades.ForEach(trade => _trades.Add(trade));
+			});
+
+			System15LyCommand = ReactiveCommand.CreateAsyncTask(async _ =>
+			{
+				var edsc = Locator.CurrentMutable.GetService<IQueryEdsc>();
+				var lootService = Locator.CurrentMutable.GetService<ICalculateLoot>();
+				_trades.Clear();
+				var systems = await edsc.QueryForSystemNameAsync(_.ToString().ToLower());
+
+				FoundSystem system;
+				if (systems.Metadata.FoundSystems.Count() != 1)
+				{
+					Debug.WriteLine("Found several systems - Trying to guess...");
+					var matches = systems.Metadata.FoundSystems.Where(x => x.Name.Trim().ToLower().Equals(_.ToString().ToLower())).ToList();
+					if (!matches.Any())
+					{
+						Debug.WriteLine("No matches found");
+						return;
+					}
+
+					system = matches.First();
+					Debug.WriteLine(string.Format("Guessed on {0}", system.Name));
+				}
+				else
+				{
+					system = systems.Metadata.FoundSystems.First();
+					Debug.WriteLine(string.Format("Found {0}", system.Name));
+				}
+
+				var systemsInRange = await edsc.QueryForSystemsWithinRangeAsync(100.00f, system.Coordinates);
+
+				var systemNames = systemsInRange.Metadata.Distances.Select(x => x.SystemName.Trim().ToLower()).ToList();
+				systemNames.Add(_.ToString().ToLower());
+
+				var items = ListViewModel.AllItems.ToList().ToList();
+				var trades = await lootService.CalculateProfitAcrossSeveralSystemsAsync(items, systemNames);
+
+				trades.ForEach(trade => _trades.Add(trade));
 			});
 
 			PurgeDataCommand = ReactiveCommand.Create();
@@ -137,11 +182,18 @@ namespace EDAnalyzer.ViewModels
 			get { return _trades; }
 		}
 
+		public Trade SelectedTrade
+		{
+			get { return _selectedTrade; }
+			set { this.RaiseAndSetIfChanged(ref _selectedTrade, value); }
+		}
+
 		public ReactiveCommand<Unit> SaveAsyncCommand { get; protected set; }
 		public ReactiveCommand<object> PurgeDataCommand { get; protected set; }
 		public ReactiveCommand<object> FilterCommand { get; protected set; }
-		public ReactiveCommand<object> InterSystemCommand { get; protected set; }
-		public ReactiveCommand<object> AllInterSystemsCommand { get; protected set; }
+		public ReactiveCommand<Unit> InterSystemCommand { get; protected set; }
+		public ReactiveCommand<Unit> AllInterSystemsCommand { get; protected set; }
+		public ReactiveCommand<Unit> System15LyCommand { get; protected set; } 
 
 		public string OrderField
 		{
