@@ -1,14 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using EDAnalyzer.Commands;
 using EDAnalyzer.Interfaces;
 using EDAnalyzer.Models;
-using EDAnalyzer.Models.EDSC.Response;
-using EDAnalyzer.Services;
-using MoreLinq;
 using ReactiveUI;
 using Splat;
 
@@ -38,66 +35,9 @@ namespace EDAnalyzer.ViewModels
 			FilterCommand = ReactiveCommand.Create();
 			FilterCommand.Subscribe(_ => { FilterString = _ as string; });
 
-			InterSystemCommand = ReactiveCommand.CreateAsyncTask(async _ =>
-			{
-				var lootService = Locator.CurrentMutable.GetService<ICalculateLoot>();
-				_trades.Clear();
-
-				var itemsInSystem =
-					ListViewModel.AllItems.Where(x => x.SystemName.ToLower().Equals(_.ToString().ToLower())).ToList();
-				var trades = await lootService.CalculateProfitInOneSystem(itemsInSystem);
-
-				trades.ForEach(trade => _trades.Add(trade));
-			});
-
-			AllInterSystemsCommand = ReactiveCommand.CreateAsyncTask(async _ =>
-			{
-				var lootService = Locator.CurrentMutable.GetService<ICalculateLoot>();
-				_trades.Clear();
-
-				var items = ListViewModel.AllItems.ToList().ToList();
-				var trades = await lootService.CalculateProfitAcrossSystems(items);
-
-				trades.ForEach(trade => _trades.Add(trade));
-			});
-
-			System15LyCommand = ReactiveCommand.CreateAsyncTask(async _ =>
-			{
-				var edsc = Locator.CurrentMutable.GetService<IQueryEdsc>();
-				var lootService = Locator.CurrentMutable.GetService<ICalculateLoot>();
-				_trades.Clear();
-				var systems = await edsc.QueryForSystemNameAsync(_.ToString().ToLower());
-
-				FoundSystem system;
-				if (systems.Metadata.FoundSystems.Count() != 1)
-				{
-					Debug.WriteLine("Found several systems - Trying to guess...");
-					var matches = systems.Metadata.FoundSystems.Where(x => x.Name.Trim().ToLower().Equals(_.ToString().ToLower())).ToList();
-					if (!matches.Any())
-					{
-						Debug.WriteLine("No matches found");
-						return;
-					}
-
-					system = matches.First();
-					Debug.WriteLine(string.Format("Guessed on {0}", system.Name));
-				}
-				else
-				{
-					system = systems.Metadata.FoundSystems.First();
-					Debug.WriteLine(string.Format("Found {0}", system.Name));
-				}
-
-				var systemsInRange = await edsc.QueryForSystemsWithinRangeAsync(15.00f, system.Coordinates);
-
-				var systemNames = systemsInRange.Metadata.Distances.Select(x => x.SystemName.Trim().ToLower()).ToList();
-				systemNames.Add(_.ToString().ToLower());
-
-				var items = ListViewModel.AllItems.ToList().ToList();
-				var trades = await lootService.CalculateProfitAcrossSeveralSystemsAsync(items, systemNames);
-
-				trades.ForEach(trade => _trades.Add(trade));
-			});
+			InterSystemCommand = InterSystemCommandFactory.Create(_trades, ListViewModel.AllItems);
+			AllInterSystemsCommand = AllInterSystemsCommandFactory.Create(_trades, ListViewModel.AllItems);
+			System15LyCommand = System15LyCommandFactory.Create(_trades, ListViewModel.AllItems);
 
 			PurgeDataCommand = ReactiveCommand.Create();
 			PurgeDataCommand.Subscribe(_ =>
@@ -193,7 +133,7 @@ namespace EDAnalyzer.ViewModels
 		public ReactiveCommand<object> FilterCommand { get; protected set; }
 		public ReactiveCommand<Unit> InterSystemCommand { get; protected set; }
 		public ReactiveCommand<Unit> AllInterSystemsCommand { get; protected set; }
-		public ReactiveCommand<Unit> System15LyCommand { get; protected set; } 
+		public ReactiveCommand<Unit> System15LyCommand { get; protected set; }
 
 		public string OrderField
 		{
