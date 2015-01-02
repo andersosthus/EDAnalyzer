@@ -1,0 +1,13 @@
+﻿<Window x:Class="EDAnalyzer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:reactiveUi="clr-namespace:ReactiveUI;assembly=ReactiveUI"
+        Title="MainWindow" Height="800" Width="1200">
+    <Grid UseLayoutRounding="True">
+        <reactiveUi:RoutedViewHost
+            Router="{Binding Router}"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch" >
+        </reactiveUi:RoutedViewHost>
+    </Grid>
+</Window>

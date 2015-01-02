@@ -1,0 +1,186 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             x:Class="EDAnalyzer.Views.MainView"
+             mc:Ignorable="d"
+            x:Name="TestControl"
+             d:DesignHeight="600" d:DesignWidth="1200">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="24"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="120"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Save" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Stretch" Command="{Binding SaveAsyncCommand}" Grid.Column="0" Grid.Row="0"/>
+            <TextBlock HorizontalAlignment="Stretch" Margin="10,10,10,0" TextWrapping="Wrap" Text="Filter:" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="0"/>
+            <TextBox HorizontalAlignment="Stretch" Margin="10,10,10,0" TextWrapping="Wrap" Text="{Binding FilterString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Stretch" Grid.Column="2" Grid.Row="0"/>
+            <!--<Button Content="Import from CSV" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="100" Click="ImportCsv_Click"/>-->
+            <Button Content="Purge old Data" HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Stretch" Command="{Binding PurgeDataCommand}" Grid.Column="5" Grid.Row="0"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="340"/>
+            </Grid.ColumnDefinitions>
+            <ListView 
+                x:Name="Overview" 
+                HorizontalAlignment="Stretch" 
+                Margin="10,10,10,10" 
+                VerticalAlignment="Stretch" 
+                ItemsSource="{Binding Items}" 
+                Grid.Row="0" 
+                Grid.Column="0"
+                ButtonBase.Click="GridViewColumnHeaderClickedHandler" 
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedItem}">
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu>
+                                    <MenuItem Header="Filter on System" 
+                                              Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
+                                              CommandParameter="{Binding SystemName}"/>
+                                    <MenuItem Header="Filter on Station" 
+                                              Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
+                                              CommandParameter="{Binding StationName}"/>
+                                    <MenuItem Header="Filter on Commodity" 
+                                              Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
+                                              CommandParameter="{Binding CommodityName}"/>
+                                    <Separator/>
+                                    <MenuItem Header="Find optimal inter-system cargo" 
+                                              Command="{Binding ViewModel.InterSystemCommand, Source={x:Reference TestControl}}"
+                                              CommandParameter="{Binding SystemName}"/>
+                                    <MenuItem Header="Find all optimal inter-system cargo" 
+                                              Command="{Binding ViewModel.AllInterSystemsCommand, Source={x:Reference TestControl}}"
+                                              CommandParameter=""/>
+                                    <Separator/>
+                                    <MenuItem Header="Clear Filter" 
+                                              Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
+                                              CommandParameter=""/>
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.Resources>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="System Name" Width="120" CellTemplate="{StaticResource SystemName}" />
+                        <GridViewColumn Header="Station Name" Width="120" CellTemplate="{StaticResource StationName}" />
+                        <GridViewColumn Header="Commodity Name" Width="150" CellTemplate="{StaticResource CommodityName}" />
+                        <GridViewColumn Header="Sell Price" Width="80" CellTemplate="{StaticResource SellPrice}" />
+                        <GridViewColumn Header="Buy Price" Width="80" CellTemplate="{StaticResource BuyPrice}" />
+                        <GridViewColumn Header="Demand" Width="80" CellTemplate="{StaticResource Demand}" />
+                        <GridViewColumn Header="Updated At" Width="160" CellTemplate="{StaticResource UpdatedAt}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <StackPanel Grid.Column="1">
+                <Border BorderBrush="Black" BorderThickness="1" Height="Auto" Margin="10,10,10,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <!--<Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Content="From System"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Content="To System"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Content="From Station"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Content="To Station"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0" Content="Commodity"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="5" Grid.Column="0" Content="Buy For"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="6" Grid.Column="0" Content="Sell For"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="7" Grid.Column="0" Content="Profit"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Content="Balls"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Content="Balls"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" Content="Balls"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="1" Content="Balls"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="4" Grid.Column="1" Content="Balls"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="5" Grid.Column="1" Content="Balls"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="6" Grid.Column="1" Content="Balls"></Label>
+                        <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="7" Grid.Column="1" Content="Balls"></Label>-->
+                    </Grid>
+                </Border>
+                <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Top Trades"></Label>
+                <ListBox 
+                    x:Name="TradeBox"
+                    HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding Trades}"
+                    Margin="10,10,10,10"
+                    Height="300"
+                    SelectionMode="Single"
+                    SelectionChanged="TradeBox_OnSelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="70" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Commodity}" />
+                                <TextBlock Grid.Column="1"  Text="{Binding TradeType}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+            </StackPanel>
+        </Grid>
+        <DockPanel Grid.Row="2">
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </StatusBar.ItemsPanel>
+                <StatusBarItem Grid.Column="0">
+                    <TextBlock x:Name="Commodities" Text="{Binding CommoditiesCount}"/>
+                </StatusBarItem>
+                <StatusBarItem Grid.Column="1">
+                    <TextBlock x:Name="SystemCount" Text="{Binding SystemCount}"/>
+                </StatusBarItem>
+                <StatusBarItem Grid.Column="2">
+                    <TextBlock x:Name="StationCount" Text="{Binding StationCount}"/>
+                </StatusBarItem>
+                <StatusBarItem Grid.Column="4">
+                    <TextBlock x:Name="Indicator" Text="Saving" Visibility="{Binding IndicatorSaving, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </StatusBarItem>
+            </StatusBar>
+        </DockPanel>
+    </Grid>
+</UserControl>
