@@ -22,7 +22,6 @@ namespace EDAnalyzer.ViewModels
 	public class MainListViewModel : ReactiveObject, IMainListViewModel
 	{
 		private readonly ReactiveList<ItemLine> _completeList = new ReactiveList<ItemLine>();
-		private readonly IEddnService _eddnService;
 		private readonly ReactiveList<ItemLine> _processorList = new ReactiveList<ItemLine>();
 		private readonly ISaveService _saveService;
 		private readonly SHA256 _sha;
@@ -34,12 +33,11 @@ namespace EDAnalyzer.ViewModels
 		public MainListViewModel()
 		{
 			_saveService = Locator.Current.GetService<ISaveService>();
-			_eddnService = Locator.Current.GetService<IEddnService>();
-			var cts = new CancellationTokenSource();
+			var eddnService = Locator.Current.GetService<IEddnService>();
 			_completeList.ChangeTrackingEnabled = true;
 			_sha = SHA256.Create();
 
-			_eddnService.FetchFromEddnAsync(cts.Token)
+			eddnService.FetchFromEddnAsync()
 				.ObserveOn(Dispatcher.CurrentDispatcher)
 				.SubscribeOn(TaskPoolScheduler.Default)
 				.Subscribe(i => _processorList.Add(i));

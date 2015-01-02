@@ -28,7 +28,7 @@ namespace EDAnalyzer.ViewModels
 		private void RegisterParts(IMutableDependencyResolver dependencyResolver)
 		{
 			dependencyResolver.RegisterConstant(this, typeof (IScreen));
-			dependencyResolver.Register(() => new EddnService(), typeof (IEddnService));
+			dependencyResolver.RegisterConstant(new EddnService(), typeof (IEddnService));
 			dependencyResolver.Register(() => new MainView(), typeof (IViewFor<MainViewModel>));
 			dependencyResolver.Register(() => new MainListViewModel(), typeof (IMainListViewModel));
 			dependencyResolver.Register(() => new SaveService(), typeof (ISaveService));

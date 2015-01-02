@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 using Akavache;
+using EDAnalyzer.Interfaces;
+using Splat;
 
 namespace EDAnalyzer
 {
@@ -11,6 +13,8 @@ namespace EDAnalyzer
 		private void App_OnExit(object sender, ExitEventArgs e)
 		{
 			BlobCache.Shutdown().Wait();
+			var eddnService = Locator.CurrentMutable.GetService<IEddnService>();
+			eddnService.Disconnect();
 			//var mainListVm = Locator.CurrentMutable.GetService<IMainListViewModel>();
 			//mainListVm.SaveAsync().Execute(null);
 		}

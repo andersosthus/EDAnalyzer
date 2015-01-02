@@ -31,15 +31,15 @@ namespace EDAnalyzer.ViewModels
 		{
 			HostScreen = screen;
 			ListViewModel = Locator.CurrentMutable.GetService<IMainListViewModel>();
-			SaveAsyncCommand = ListViewModel.SaveAsync();
-			FilterCommand = ReactiveCommand.Create();
-			FilterCommand.Subscribe(_ => { FilterString = _ as string; });
 
 			InterSystemCommand = InterSystemCommandFactory.Create(_trades, ListViewModel.AllItems);
 			AllInterSystemsCommand = AllInterSystemsCommandFactory.Create(_trades, ListViewModel.AllItems);
 			System15LyCommand = System15LyCommandFactory.Create(_trades, ListViewModel.AllItems);
-
+			SaveAsyncCommand = ListViewModel.SaveAsync();
+			FilterCommand = ReactiveCommand.Create();
 			PurgeDataCommand = ReactiveCommand.Create();
+
+			FilterCommand.Subscribe(_ => { FilterString = _ as string; });
 			PurgeDataCommand.Subscribe(_ =>
 			{
 				var oldItems = ListViewModel.AllItems.Where(x => x.UpdatedAt < DateTime.Now.AddHours(-48)).ToList();

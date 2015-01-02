@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -17,15 +18,16 @@ namespace EDAnalyzer.Services
 	public class EddnService : IEddnService
 	{
 		private const string Endpoint = "tcp://eddn-relay.elite-markets.net:9500";
+		private readonly CancellationTokenSource _cts;
 		private NetMQContext _ctx;
-		private bool _run = true;
 		private SubscriberSocket _sub;
 
 		public EddnService()
 		{
+			_cts = new CancellationTokenSource();
 		}
 
-		public IObservable<ItemLine> FetchFromEddnAsync(CancellationToken token)
+		public IObservable<ItemLine> FetchFromEddnAsync()
 		{
 			return Observable.Create<ItemLine>(async observer =>
 			{
@@ -38,14 +40,20 @@ namespace EDAnalyzer.Services
 				{
 					var msg = new Msg();
 					msg.InitEmpty();
-					_sub.Receive(ref msg, SendReceiveOptions.None);
+					try
+					{
+						_sub.Receive(ref msg, SendReceiveOptions.None);
+					}
+					catch (SocketException)
+					{
+					}
 
 					if (msg.Data == null) continue;
 
 					var uncompresed = ZlibStream.UncompressBuffer(msg.Data);
 					var asString = Encoding.UTF8.GetString(uncompresed);
 
-					var asJson = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<Root>(asString), token);
+					var asJson = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<Root>(asString), _cts.Token);
 
 					var item = new ItemLine
 					{
@@ -59,10 +67,18 @@ namespace EDAnalyzer.Services
 					};
 
 					observer.OnNext(item);
-				} while (!token.IsCancellationRequested);
+				} while (!_cts.Token.IsCancellationRequested);
 
 				observer.OnCompleted();
 			});
+		}
+
+		public void Disconnect()
+		{
+			_cts.Cancel();
+			_sub.Unsubscribe("");
+			_sub.Disconnect(Endpoint);
+			_sub.Dispose();
 		}
 	}
 }
