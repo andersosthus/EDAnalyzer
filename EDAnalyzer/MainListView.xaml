@@ -27,7 +27,35 @@
     <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="UpdatedAt">
         <TextBlock Text="{Binding Path=UpdatedAt, Converter={StaticResource UtcToLocalConverter}}" Foreground="Black" />
     </DataTemplate>
-    
+
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeCommodity">
+        <TextBlock Text="{Binding Path=Commodity}" Foreground="Black"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeFromSystem">
+        <TextBlock Text="{Binding Path=FromSystem}" Foreground="Black"></TextBlock>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeBuyStation">
+        <TextBlock Text="{Binding Path=BuyStation}" Foreground="Black"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeToSystem">
+        <TextBlock Text="{Binding Path=ToSystem}" Foreground="Black"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeSellStation">
+        <TextBlock Text="{Binding Path=SellStation}" Foreground="Black"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeDemand">
+        <TextBlock Text="{Binding Path=Demand}" Foreground="Black"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeBuyPrice">
+        <TextBlock Text="{Binding Path=BuyPrice}" Foreground="Black"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeSellPrice">
+        <TextBlock Text="{Binding Path=SellPrice}" Foreground="Black"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type models:ItemLine}" x:Key="TradeProfit">
+        <TextBlock Text="{Binding Path=Profit}" Foreground="Black"/>
+    </DataTemplate>
+
     <ControlTemplate x:Key="InfoLabel">
         <Label Margin="5,5,5,5" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="Black" ></Label>
     </ControlTemplate>

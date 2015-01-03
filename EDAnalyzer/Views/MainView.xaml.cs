@@ -108,5 +108,9 @@ namespace EDAnalyzer.Views
 				? ListSortDirection.Descending
 				: ListSortDirection.Ascending;
 		}
+
+		private void TradeListColumnHeader_OnClick(object sender, RoutedEventArgs e)
+		{
+		}
 	}
 }

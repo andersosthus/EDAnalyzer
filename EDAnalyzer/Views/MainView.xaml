@@ -38,75 +38,104 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="340"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ListView 
-                x:Name="Overview" 
-                HorizontalAlignment="Stretch" 
-                Margin="10,10,10,10" 
-                VerticalAlignment="Stretch" 
-                ItemsSource="{Binding Items}" 
-                Grid.Row="0" 
-                Grid.Column="0"
-                ButtonBase.Click="GridViewColumnHeaderClickedHandler" 
-                SelectionMode="Single"
-                SelectedItem="{Binding SelectedItem}">
-                <ListView.Resources>
-                    <Style TargetType="{x:Type ListViewItem}">
-                        <Setter Property="ContextMenu">
-                            <Setter.Value>
-                                <ContextMenu>
-                                    <MenuItem Header="Filter on System" 
-                                              Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
-                                              CommandParameter="{Binding SystemName}"/>
-                                    <MenuItem Header="Filter on Station" 
-                                              Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
-                                              CommandParameter="{Binding StationName}"/>
-                                    <MenuItem Header="Filter on Commodity" 
-                                              Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
-                                              CommandParameter="{Binding CommodityName}"/>
-                                    <Separator/>
-                                    <MenuItem Header="Find optimal inter-system cargo" 
-                                              Command="{Binding ViewModel.InterSystemCommand, Source={x:Reference TestControl}}"
-                                              CommandParameter="{Binding SystemName}"/>
-                                    <MenuItem Header="Find optimal cargo within 15 LY" 
-                                              Command="{Binding ViewModel.System15LyCommand, Source={x:Reference TestControl}}"
-                                              CommandParameter="{Binding SystemName}"/>
-                                    <MenuItem Header="Find all optimal inter-system cargo" 
-                                              Command="{Binding ViewModel.AllInterSystemsCommand, Source={x:Reference TestControl}}"
-                                              CommandParameter=""/>
-                                    <Separator/>
-                                    <MenuItem Header="Add to custom trade system list"
-                                              Command="{Binding ViewModel.AddToSystemListCommand, Source={x:Reference TestControl}}"
-                                              CommandParameter="{Binding SystemName}">
-                                    </MenuItem>
-                                    <MenuItem Header="Execute custom search"
-                                              Command="{Binding ViewModel.FindTradsInSelectedSystems, Source={x:Reference TestControl}}"
-                                              CommandParameter="">
-                                    </MenuItem>
-                                    <Separator />
-                                    <MenuItem Header="Clear Filter" 
-                                              Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
-                                              CommandParameter=""/>
-                                </ContextMenu>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.Resources>
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="System Name" Width="120" CellTemplate="{StaticResource SystemName}" />
-                        <GridViewColumn Header="Station Name" Width="120" CellTemplate="{StaticResource StationName}" />
-                        <GridViewColumn Header="Commodity Name" Width="150" CellTemplate="{StaticResource CommodityName}" />
-                        <GridViewColumn Header="Sell Price" Width="80" CellTemplate="{StaticResource SellPrice}" />
-                        <GridViewColumn Header="Buy Price" Width="80" CellTemplate="{StaticResource BuyPrice}" />
-                        <GridViewColumn Header="Demand" Width="80" CellTemplate="{StaticResource Demand}" />
-                        <GridViewColumn Header="Updated At" Width="160" CellTemplate="{StaticResource UpdatedAt}" />
-                    </GridView>
-                </ListView.View>
-            </ListView>
-            <StackPanel Grid.Column="1">
-                <Border BorderBrush="Black" BorderThickness="1" Height="Auto" Margin="10,10,10,10">
+            <TabControl x:Name="MainTab"
+                Grid.Row="0"
+                Margin="10,10,10,10">
+                <TabItem Header="All items">
+                    <ListView 
+                        x:Name="Overview" 
+                        HorizontalAlignment="Stretch" 
+                        Margin="5,5,5,5" 
+                        VerticalAlignment="Stretch" 
+                        ItemsSource="{Binding Items}" 
+                        ButtonBase.Click="GridViewColumnHeaderClickedHandler" 
+                        SelectionMode="Single">
+                            <ListView.Resources>
+                                <Style TargetType="{x:Type ListViewItem}">
+                                    <Setter Property="ContextMenu">
+                                        <Setter.Value>
+                                            <ContextMenu>
+                                                <MenuItem Header="Filter on System" 
+                                                  Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
+                                                  CommandParameter="{Binding SystemName}"/>
+                                                <MenuItem Header="Filter on Station" 
+                                                  Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
+                                                  CommandParameter="{Binding StationName}"/>
+                                                <MenuItem Header="Filter on Commodity" 
+                                                  Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
+                                                  CommandParameter="{Binding CommodityName}"/>
+                                                <Separator/>
+                                                <MenuItem Header="Find optimal inter-system cargo" 
+                                                  Command="{Binding ViewModel.InterSystemCommand, Source={x:Reference TestControl}}"
+                                                  CommandParameter="{Binding SystemName}"/>
+                                                <MenuItem Header="Find optimal cargo within 15 LY" 
+                                                  Command="{Binding ViewModel.System15LyCommand, Source={x:Reference TestControl}}"
+                                                  CommandParameter="{Binding SystemName}"/>
+                                                <MenuItem Header="Find all optimal inter-system cargo" 
+                                                  Command="{Binding ViewModel.AllInterSystemsCommand, Source={x:Reference TestControl}}"
+                                                  CommandParameter=""/>
+                                                <Separator/>
+                                                <MenuItem Header="Add to custom trade system list"
+                                                  Command="{Binding ViewModel.AddToSystemListCommand, Source={x:Reference TestControl}}"
+                                                  CommandParameter="{Binding SystemName}">
+                                                </MenuItem>
+                                                <MenuItem Header="Execute custom search"
+                                                  Command="{Binding ViewModel.FindTradsInSelectedSystems, Source={x:Reference TestControl}}"
+                                                  CommandParameter="">
+                                                </MenuItem>
+                                                <Separator />
+                                                <MenuItem Header="Clear Filter" 
+                                                  Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
+                                                  CommandParameter=""/>
+                                            </ContextMenu>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListView.Resources>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="System Name" Width="120" CellTemplate="{StaticResource SystemName}" />
+                                    <GridViewColumn Header="Station Name" Width="120" CellTemplate="{StaticResource StationName}" />
+                                    <GridViewColumn Header="Commodity Name" Width="150" CellTemplate="{StaticResource CommodityName}" />
+                                    <GridViewColumn Header="Sell Price" Width="80" CellTemplate="{StaticResource SellPrice}" />
+                                    <GridViewColumn Header="Buy Price" Width="80" CellTemplate="{StaticResource BuyPrice}" />
+                                    <GridViewColumn Header="Demand" Width="80" CellTemplate="{StaticResource Demand}" />
+                                    <GridViewColumn Header="Updated At" Width="160" CellTemplate="{StaticResource UpdatedAt}" />
+                                </GridView>
+                            </ListView.View>
+                    </ListView>
+                </TabItem>
+                <TabItem Header="Trades">
+                    <ListView 
+                        x:Name="TradeList" 
+                        HorizontalAlignment="Stretch" 
+                        Margin="5,5,5,5" 
+                        VerticalAlignment="Stretch" 
+                        ItemsSource="{Binding Trades}" 
+                        ButtonBase.Click="TradeListColumnHeader_OnClick" 
+                        SelectionMode="Single">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Commodity Name" Width="150" CellTemplate="{StaticResource TradeCommodity}" />
+                                <GridViewColumn Header="From System" Width="120" CellTemplate="{StaticResource TradeFromSystem}" />
+                                <GridViewColumn Header="From Station" Width="120" CellTemplate="{StaticResource TradeBuyStation}" />
+                                <GridViewColumn Header="To System" Width="120" CellTemplate="{StaticResource TradeToSystem}" />
+                                <GridViewColumn Header="To Station" Width="120" CellTemplate="{StaticResource TradeSellStation}" />
+                                <GridViewColumn Header="Demand" Width="80" CellTemplate="{StaticResource TradeDemand}" />
+                                <GridViewColumn Header="Buy Price" Width="80" CellTemplate="{StaticResource TradeBuyPrice}" />
+                                <GridViewColumn Header="Sell Price" Width="80" CellTemplate="{StaticResource TradeSellPrice}" />
+                                <GridViewColumn Header="Profit" Width="80" CellTemplate="{StaticResource TradeProfit}" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </TabItem>
+            </TabControl>
+            <GridSplitter x:Name="MainSplitter" Grid.Column="1" Width="3" HorizontalAlignment="Stretch"/>
+            <StackPanel Grid.Column="2">
+                <!--<Border BorderBrush="Black" BorderThickness="1" Height="Auto" Margin="10,10,10,10">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -165,7 +194,7 @@
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
-                </ListBox>
+                </ListBox>-->
                 <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Selected Systems:"></Label>
                 <ListBox 
                     x:Name="SelectedSystems"
