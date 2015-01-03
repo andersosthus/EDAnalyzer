@@ -6,7 +6,7 @@
              x:Class="EDAnalyzer.Views.MainView"
              mc:Ignorable="d"
             x:Name="TestControl"
-             d:DesignHeight="600" d:DesignWidth="1200">
+             d:DesignHeight="900" d:DesignWidth="1200">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -76,6 +76,15 @@
                                               Command="{Binding ViewModel.AllInterSystemsCommand, Source={x:Reference TestControl}}"
                                               CommandParameter=""/>
                                     <Separator/>
+                                    <MenuItem Header="Add to custom trade system list"
+                                              Command="{Binding ViewModel.AddToSystemListCommand, Source={x:Reference TestControl}}"
+                                              CommandParameter="{Binding SystemName}">
+                                    </MenuItem>
+                                    <MenuItem Header="Execute custom search"
+                                              Command="{Binding ViewModel.FindTradsInSelectedSystems, Source={x:Reference TestControl}}"
+                                              CommandParameter="">
+                                    </MenuItem>
+                                    <Separator />
                                     <MenuItem Header="Clear Filter" 
                                               Command="{Binding ViewModel.FilterCommand, Source={x:Reference TestControl}}"
                                               CommandParameter=""/>
@@ -141,7 +150,7 @@
                     HorizontalContentAlignment="Stretch"
                     ItemsSource="{Binding Trades}"
                     Margin="10,0,10,10"
-                    Height="300"
+                    Height="180"
                     SelectionMode="Single"
                     SelectedItem="{Binding SelectedTrade}">
                     <ListBox.ItemTemplate>
@@ -157,7 +166,24 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-
+                <Label Margin="5,0,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Selected Systems:"></Label>
+                <ListBox 
+                    x:Name="SelectedSystems"
+                    HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding SelectedSystems}"
+                    Margin="10,0,10,10"
+                    Height="180">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
         </Grid>
         <DockPanel Grid.Row="2">

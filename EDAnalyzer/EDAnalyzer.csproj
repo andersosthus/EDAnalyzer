@@ -145,6 +145,7 @@
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
     <Compile Include="AsyncVoid.cs" />
     <Compile Include="Commands\AllInterSystemsCommandFactory.cs" />
+    <Compile Include="Commands\FindTradsInSelectedSystemsFactory.cs" />
     <Compile Include="Commands\InterSystemCommandFactory.cs" />
     <Compile Include="Commands\System15LyCommandFactory.cs" />
     <Compile Include="Constants.cs" />

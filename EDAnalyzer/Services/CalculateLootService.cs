@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EDAnalyzer.Interfaces;
 using EDAnalyzer.Models;
 using MoreLinq;
+using ReactiveUI;
 
 namespace EDAnalyzer.Services
 {
@@ -24,7 +25,7 @@ namespace EDAnalyzer.Services
 			var profitableTrades = trades.OrderByDescending(x => x.Profit).Take(5).ToList();
 			return profitableTrades;
 		}
-
+		
 		public async Task<List<Trade>> CalculateProfitAcrossSystems(IList<ItemLine> items)
 		{
 			var systemList = items.DistinctBy(x => x.SystemName.ToLower());
@@ -43,6 +44,18 @@ namespace EDAnalyzer.Services
 
 		public async Task<List<Trade>> CalculateProfitAcrossSeveralSystemsAsync(IList<ItemLine> items,
 			IList<string> systemNames)
+		{
+			return await DoCalculationOfProfitAcrossSeveralSystemsAsync(items, systemNames);
+		}
+
+		public async Task<List<Trade>> CalculateProfitAcrossSeveralSystemsAsync(IReadOnlyReactiveList<ItemLine> readOnlyItems,
+			IList<string> systemNames)
+		{
+			var items = readOnlyItems.ToList();
+			return await DoCalculationOfProfitAcrossSeveralSystemsAsync(items, systemNames);
+		}
+
+		private static async Task<List<Trade>> DoCalculationOfProfitAcrossSeveralSystemsAsync(IList<ItemLine> items, ICollection<string> systemNames)
 		{
 			Debug.WriteLine("Started processing...");
 			var systemList =
@@ -100,6 +113,10 @@ namespace EDAnalyzer.Services
 							if (sellStation.Demand == 0 || sellStation.Demand <= 0)
 								continue;
 
+							var profit = sellStation.SellPrice - item.BuyPrice;
+							if(profit <= 0)
+								continue;
+
 							var foundTrade = new Trade
 							{
 								BuyPrice = item.BuyPrice,
@@ -110,9 +127,9 @@ namespace EDAnalyzer.Services
 								SellStation = sellStation.StationName,
 								SellPrice = sellStation.SellPrice,
 								Demand = sellStation.Demand,
+								Profit = profit,
 								TradeType = (item.SystemName.Equals(sellStation.SystemName)) ? Constants.TradeType.IntraSystem : Constants.TradeType.CrossSystem
 							};
-							foundTrade.Profit = foundTrade.SellPrice - foundTrade.BuyPrice;
 
 							trades.Add(foundTrade);
 						}

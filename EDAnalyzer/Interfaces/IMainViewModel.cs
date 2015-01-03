@@ -14,6 +14,7 @@ namespace EDAnalyzer.Interfaces
 		ReactiveCommand<Unit> SaveAsyncCommand { get; }
 		ReactiveCommand<object> PurgeDataCommand { get; }
 		ReactiveCommand<object> FilterCommand { get; }
+		ReactiveCommand<object> AddToSystemListCommand { get; }
 		ReactiveCommand<Unit> InterSystemCommand { get; }
 		ReactiveCommand<Unit> AllInterSystemsCommand { get; }
 		ReactiveCommand<Unit> System15LyCommand { get; }

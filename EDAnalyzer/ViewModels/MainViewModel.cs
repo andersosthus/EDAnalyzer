@@ -19,6 +19,7 @@ namespace EDAnalyzer.ViewModels
 		private readonly ObservableAsPropertyHelper<string> _stationCount;
 		private readonly ObservableAsPropertyHelper<string> _systemCount;
 		private readonly ReactiveList<Trade> _trades = new ReactiveList<Trade>();
+		private readonly ReactiveList<string> _selectedSystems = new ReactiveList<string>();
 		private string _filterString = "";
 		private IReactiveDerivedList<ItemLine> _items;
 		private IMainListViewModel _listViewModel;
@@ -35,7 +36,9 @@ namespace EDAnalyzer.ViewModels
 			InterSystemCommand = InterSystemCommandFactory.Create(_trades, ListViewModel.AllItems);
 			AllInterSystemsCommand = AllInterSystemsCommandFactory.Create(_trades, ListViewModel.AllItems);
 			System15LyCommand = System15LyCommandFactory.Create(_trades, ListViewModel.AllItems);
+			FindTradsInSelectedSystems = FindTradsInSelectedSystemsFactory.Create(_trades, ListViewModel.AllItems, _selectedSystems);
 			SaveAsyncCommand = ListViewModel.SaveAsync();
+			AddToSystemListCommand = ReactiveCommand.Create();
 			FilterCommand = ReactiveCommand.Create();
 			PurgeDataCommand = ReactiveCommand.Create();
 
@@ -45,6 +48,8 @@ namespace EDAnalyzer.ViewModels
 				var oldItems = ListViewModel.AllItems.Where(x => x.UpdatedAt < DateTime.Now.AddHours(-48)).ToList();
 				oldItems.ForEach(x => ListViewModel.DeletionList.Add(x));
 			});
+
+			AddToSystemListCommand.Subscribe(_ => _selectedSystems.Add(_ as string));
 
 			this.WhenAnyObservable(x => x.Items.CountChanged)
 				.ToProperty(this, v => v.ShowingItemsCount, out _showingItemsCount);
@@ -122,6 +127,11 @@ namespace EDAnalyzer.ViewModels
 			get { return _trades; }
 		}
 
+		public ReactiveList<string> SelectedSystems
+		{
+			get { return _selectedSystems; }
+		}
+
 		public Trade SelectedTrade
 		{
 			get { return _selectedTrade; }
@@ -131,9 +141,11 @@ namespace EDAnalyzer.ViewModels
 		public ReactiveCommand<Unit> SaveAsyncCommand { get; protected set; }
 		public ReactiveCommand<object> PurgeDataCommand { get; protected set; }
 		public ReactiveCommand<object> FilterCommand { get; protected set; }
+		public ReactiveCommand<object> AddToSystemListCommand { get; protected set; }
 		public ReactiveCommand<Unit> InterSystemCommand { get; protected set; }
 		public ReactiveCommand<Unit> AllInterSystemsCommand { get; protected set; }
 		public ReactiveCommand<Unit> System15LyCommand { get; protected set; }
+		public ReactiveCommand<Unit> FindTradsInSelectedSystems { get; protected set; } 
 
 		public string OrderField
 		{
