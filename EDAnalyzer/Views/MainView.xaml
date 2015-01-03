@@ -213,6 +213,7 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+                <Button Margin="5,0,5,0" Content="Clear list" Command="{Binding ClearSystemListCommand}"></Button>
             </StackPanel>
         </Grid>
         <DockPanel Grid.Row="2">

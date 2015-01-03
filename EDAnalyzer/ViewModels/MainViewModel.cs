@@ -39,6 +39,7 @@ namespace EDAnalyzer.ViewModels
 			FindTradsInSelectedSystems = FindTradsInSelectedSystemsFactory.Create(_trades, ListViewModel.AllItems, _selectedSystems);
 			SaveAsyncCommand = ListViewModel.SaveAsync();
 			AddToSystemListCommand = ReactiveCommand.Create();
+			ClearSystemListCommand = ReactiveCommand.Create();
 			FilterCommand = ReactiveCommand.Create();
 			PurgeDataCommand = ReactiveCommand.Create();
 
@@ -50,6 +51,7 @@ namespace EDAnalyzer.ViewModels
 			});
 
 			AddToSystemListCommand.Subscribe(_ => _selectedSystems.Add(_ as string));
+			ClearSystemListCommand.Subscribe(_ => _selectedSystems.Clear());
 
 			this.WhenAnyObservable(x => x.Items.CountChanged)
 				.ToProperty(this, v => v.ShowingItemsCount, out _showingItemsCount);
@@ -142,6 +144,7 @@ namespace EDAnalyzer.ViewModels
 		public ReactiveCommand<object> PurgeDataCommand { get; protected set; }
 		public ReactiveCommand<object> FilterCommand { get; protected set; }
 		public ReactiveCommand<object> AddToSystemListCommand { get; protected set; }
+		public ReactiveCommand<object> ClearSystemListCommand { get; protected set; }
 		public ReactiveCommand<Unit> InterSystemCommand { get; protected set; }
 		public ReactiveCommand<Unit> AllInterSystemsCommand { get; protected set; }
 		public ReactiveCommand<Unit> System15LyCommand { get; protected set; }
